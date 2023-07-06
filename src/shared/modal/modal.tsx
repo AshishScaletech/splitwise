@@ -18,8 +18,9 @@ const CustomModal: React.FC<IModalProps> = (props) => {
 	return (
 		<Modal show={props.show} onHide={props.handleClose} className={`${props.className || ''} fadeIn`}>
 			{props.modalTitle ? (
-				<Modal.Header closeButton>
+				<Modal.Header >
 					<Modal.Title>
+						<p className='text--center'>&nbsp;&nbsp;{props.modalTitle}</p>
 						&nbsp;&nbsp;{props.modalTitle2}
 						{props.modalTitle3}
 					</Modal.Title>

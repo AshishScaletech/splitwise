@@ -9,6 +9,7 @@ import ResetPassword from 'features/auth/component/resetPassword';
 import { IState } from 'shared/interface/state';
 import Layout from 'hoc/layout/layout';
 import Home from 'features/split/container/home';
+import ExpenseList from 'features/split/component/expenceList';
 
 const App: React.FC = () => {
 	const isLogin: boolean = useSelector((state: IState) => state.auth.isLogin);
@@ -18,6 +19,7 @@ const App: React.FC = () => {
 			<Routes>
 				<Route path='/home' element={<Home />} />
 				<Route path='*' element={<Navigate replace to='/home' />} />
+
 			</Routes>
 		</Layout>
 	)

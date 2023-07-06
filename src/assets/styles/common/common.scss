@@ -473,7 +473,7 @@
 }
 
 .ml--15 {
-	@include marginLeft(15px);
+	@include marginLeft(15px !important) ;
 }
 
 .ml--17 {
@@ -1157,12 +1157,20 @@
 	fill: $green;
 }
 
+.fill--black {
+	fill: $black;
+}
+
 .fill--red {
 	@include getShadesColorClasses($red, 'fill');
 }
 
 .stroke--white {
 	stroke: $white;
+}
+
+.stroke--black {
+	stroke: $black;
 }
 
 .stroke--primary {
@@ -1204,6 +1212,10 @@
 
 .text--black {
 	color: $black;
+}
+
+.text--white {
+	color: $white;
 }
 
 /* Background
@@ -1339,3 +1351,136 @@
 	color: getColor($red, 200);
 	@include marginTop(10px);
 }
+
+	.container {
+		width: $full-width;
+		max-width: 1000px;
+		// @include padding();
+		@include margin(0 auto);
+		box-sizing: border-box;
+		box-shadow: rgba(255, 255, 255, 0.658) 0px 3px 8px;
+		height: 100vh;
+		position: relative;
+
+	
+	}
+
+	.center {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	  }
+
+	.header{
+		@include padding(10px);
+		border-bottom: 1px solid rgba(32, 22, 22, 0.5);
+		height: 60px;
+		background-color: #e3e3d694;
+	}
+
+	.bottom-penal{
+		@include padding(10px);
+		bottom: 0;
+		border-top: 1px solid rgba(32, 22, 22, 0.5);
+		height: 60px;
+		background-color: #e3e3d694;
+	}
+
+	.content{
+		@include padding(16px 10px)
+	}
+
+	.list-item{
+		// border-top: 1px solid rgba(32, 22, 22, 0.5);
+		border-bottom: 1px solid rgba(32, 22, 22, 0.5);
+	}
+
+	.close-btn{
+		width:20px;
+		height: 20px;
+		top: 13px;
+    	right: 13px;
+    	position: absolute;
+		background-color:rgba(156, 152, 152, 0.74); 
+		border-radius: $border-radius-circle;
+	}
+
+	.check-wrapper {
+		display: block;
+		position: relative;
+		font-size: 22px;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		font-weight: 500;
+		height: 30px;
+		width: 30px;
+		// @include xs-down {
+		// 	height: 20px;
+		// 	width: 20px;
+		// }
+	}
+
+	.check-wrapper:hover input ~ .checkmarks {
+		background-color: #ffffff;
+	}
+	
+	.check-wrapper input:checked ~ .checkmarks {
+		background-color: #ffffff;
+	}
+	
+	.check-wrapper input:checked ~ .checkmarks:after {
+		display: block;
+	}
+
+	
+	  .boottom-panel {
+		position: relative;
+		width: 25px;
+		height: 25px;
+	  }
+	  
+	  .button {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background-color: #f2f2f2;
+		border: none;
+		cursor: pointer;
+		transition: all 0.4s ease-out;
+	  }
+	  
+	  .button.plus {
+		font-size: 24px;
+		font-weight: bold;
+	  }
+	  
+	  .button:not(.plus) {
+		opacity: 0;
+		pointer-events: none;
+	  }
+	  
+	  .boottom-panel:hover .button:not(.plus) {
+		opacity: 1;
+		pointer-events: auto;
+	  }
+	  
+	  .boottom-panel:hover .button:nth-child(2) {
+		transform: translate(-50%, -80px);
+	  }
+	  
+	  .boottom-panel:hover .button:nth-child(3) {
+		transform: translate(30px, -40px);
+	  }
+	  
+	  .boottom-panel:hover .button:nth-child(4) {
+		transform: translate(-70px, -40px);
+	  }
+	  
+

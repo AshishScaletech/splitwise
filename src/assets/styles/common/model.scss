@@ -4,8 +4,22 @@
 	position: fixed;
 	top: 0;
 	left: 0;
-	background-color: rgba(24, 25, 26, 0.98);
+	background-color: rgba(232, 235, 238, 0.664);
 	z-index: 999;
+
+	.modal-dialog{
+		width: 500px;
+    height: 560px;
+    background: aliceblue;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	@include padding(10px);
+	border-radius:$border-radius-xxl;
+	box-shadow: rgba(0,0, 0, 0.658) 0px 3px 8px;
+
+	}
 
 	.modal__body {
 		.scroll-with--sticky-header {
@@ -23,4 +37,6 @@
 			@include padding(0 20px);
 		}
 	}
+
+	
 }

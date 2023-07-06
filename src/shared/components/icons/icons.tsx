@@ -22,3 +22,10 @@ export const ShowPasswordIcon: FC<IIconProps> = ({ height, width, className }: I
 		<path d='M19.9955 5.45331C10.9066 5.45331 3.14477 11.1065 0 19.0866C3.14477 27.0665 10.9066 32.7198 19.9955 32.7198C29.0934 32.7198 36.8462 27.0665 39.991 19.0866C36.8462 11.1065 29.0934 5.45331 19.9955 5.45331ZM19.9955 28.1754C14.9784 28.1754 10.9066 24.1035 10.9066 19.0865C10.9066 14.0694 14.9784 9.9977 19.9955 9.9977C25.0125 9.9977 29.0844 14.0695 29.0844 19.0866C29.0844 24.1036 25.0125 28.1754 19.9955 28.1754Z' />
 	</svg>
 );
+
+export const CloseIcon: React.FC<IIconProps> = (props) => (
+	<svg viewBox="0 0 24 24" fill="none" className={props.className || 'stroke--black'}>
+		<path d="M18 6L6 18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+		<path d="M6 6L18 18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+	</svg>
+);
