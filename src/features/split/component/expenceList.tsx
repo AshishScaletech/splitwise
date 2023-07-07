@@ -16,10 +16,12 @@ interface Iprops {
 }
 
 
-const ExpenseList: React.FC<Iprops> = ({ options, handleExpence, allGroup, id }) => {
+const ExpenseList: React.FC<Iprops> = ({ handleExpence, allGroup, id }) => {
     const [isAdd, setIsAdd] = useState(false);
     const selectedOptions = allGroup.Groups.filter((item: any) => item.id === id)
-    const selectedExpense = allGroup.expenses.filter((item: any) => item.id === id)
+    const options = selectedOptions[0].users;
+    const findIndex = allGroup.Groups.findIndex((group) => group.id === id);
+    const selectedExpense = allGroup.Groups[findIndex].expense.filter((item: any) => item.id === id)
 
     return (
         <>
@@ -38,9 +40,13 @@ const ExpenseList: React.FC<Iprops> = ({ options, handleExpence, allGroup, id })
                         </li>
                     )
                 })}
-                {isEmpty(selectedOptions[0].users) && (
-                    <li>No Expence </li>
-                )}
+
+                <div>
+                    <p>Expence List : </p>
+                    {isEmpty(selectedOptions[0].users) && (
+                        <li>No Expence </li>
+                    )}
+                </div>
             </ul>
 
             <div>

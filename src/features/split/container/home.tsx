@@ -7,9 +7,6 @@ import { FormikValues } from 'formik';
 import { CloseIcon } from 'shared/components/icons/icons';
 import AddGroupForm from '../component/addGroupForm';
 
-
-
-
 export interface Expense {
     id: string;
     description: string;
@@ -35,11 +32,11 @@ export interface Group {
     groupName: string;
     TotalBalance: number;
     users: IUserList[];
+    expense: Expense[]
 }
 
 export interface IAllGroup {
     Groups: Group[];
-    expenses: Expense[]
 }
 
 
@@ -47,19 +44,16 @@ export interface IAllGroup {
 const Home: React.FC = () => {
     const groupData = JSON.parse(localStorage.getItem('groups') as string);
     const [allGroup, setAllGroups] = useState<IAllGroup>({
-        Groups: groupData?.Groups || [],
-        expenses: groupData?.expenses || []
+        Groups: groupData?.Groups || groupData || [],
     })
-    // console.log("alllgr:", allGroup);
 
-    // const [allGroup, setAllGroups] = useState<any>(JSON.parse(localStorage.getItem('groups') || '[]'));
-    const [action, setAction] = useState('users')
+    const [action, setAction] = useState('groups')
     const [id, setId] = useState('');
 
     const handleSubmit = useCallback((values: any) => {
         let tempObj = { ...allGroup }
         const newArr = [...tempObj.Groups]
-        newArr.push(values)
+        newArr.push({ ...values, expense: [] })
         tempObj = { ...tempObj, Groups: newArr }
         setAllGroups(tempObj)
         localStorage.setItem('groups', JSON.stringify(tempObj))
@@ -68,97 +62,38 @@ const Home: React.FC = () => {
 
 
     const handleExpence = useCallback((values: any) => {
-        let tempObj = { ...allGroup }
-        let newExpense = [...tempObj.expenses]
-        newExpense.push(values)
-        tempObj = { ...tempObj, expenses: newExpense }
+        let tempObj = [...allGroup.Groups]
+        const index = tempObj.findIndex((data) => data.id === id);
+        const copyOfExpense = [...tempObj[index].expense];
+        copyOfExpense.push(values);
+        tempObj[index] = {
+            ...tempObj[index],
+            expense: copyOfExpense
+        };
 
-        const selectedGroup = tempObj.Groups.filter(item => item.id === id)
-        let tempGrpObj = { ...selectedGroup[0] }
-        tempGrpObj = { ...tempGrpObj, TotalBalance: Number(tempGrpObj.TotalBalance) + Number(values.amount) }
-        console.log('tempGrpObj', tempGrpObj)
-        const tempUserArray = [...tempGrpObj.users]
-        const splitamount = (values.amount / size(tempUserArray)).toFixed(2)
-        const updatedArr = tempUserArray.map((item: any) => {
+        let tempArr = { ...tempObj[index] }
+        tempArr = { ...tempArr, TotalBalance: Number(tempArr.TotalBalance) + Number(values.amount) }
+
+        const copyUsers = [...tempArr.users]
+        const splitAmount = Number(values.amount) / copyUsers.length
+        const updatedUserExpense = copyUsers.map((item: IUserList) => {
+
             return {
-                ...item,
-                expence: Number(item.expence) + Number(splitamount)
+                ...item, expence: Number(item.expence) + Number(splitAmount.toFixed(2))
             }
         })
-        tempGrpObj = {
-            ...tempGrpObj,
-            users: updatedArr
+        tempArr = {
+            ...tempArr,
+            users: updatedUserExpense
         }
-        const tempArr = [...allGroup.Groups]
-        const index = tempArr.findIndex((item: any) => item.id === tempGrpObj.id)
-        if (index !== -1) {
-            tempArr.splice(index, 1, tempGrpObj)
-        }
-        const updateState = {
-            Groups: tempArr,
-            expenses: newExpense
-        }
-        console.log('updateState', updateState)
+        tempObj.splice(index, 1, tempArr)
+
+
         localStorage.setItem('groups', JSON.stringify(tempObj))
-        setAllGroups(updateState)
-        console.log('tempGrpObj', tempGrpObj)
-        console.log('tempArr', tempArr)
-        // const userLength = selectedGroup[0].users.length
-
-        // console.log("splitamount:", splitamount);
+        setAllGroups({ Groups: tempObj })
+    }, [allGroup, id,]);
 
 
-    }, [allGroup]);
-
-
-    //     setExpenses([...expenses, newExpense]);
-    // };
-
-    // const deleteExpense = (id: string) => {
-    //     setExpenses(expenses.filter((expense) => expense.id !== id));
-    // };
-
-    // const splitExpense = (id: string, amount: number, numPeople: number, groupId?: string) => {
-    //     const updatedExpenses = expenses.map((expense) => {
-    //         if (expense.id === id) {
-    //             return {
-    //                 ...expense,
-    //                 amount: expense.amount / numPeople,
-    //                 split: numPeople,
-    //                 groupId,
-    //             };
-    //         }
-    //         return expense;
-    //     });
-
-    //     setExpenses(updatedExpenses);
-    // };
-
-    // const calculateBalance = (): number => {
-    //     let totalAmount = 0;
-    //     expenses.forEach((expense) => {
-    //         totalAmount += expense.amount;
-    //     });
-    //     return totalAmount / expenses.length;
-    // };
-
-    // const addGroup = (newGroup: Group) => {
-    //     setGroups([...groups, newGroup]);
-    // };
-
-    // const deleteGroup = (id: string) => {
-    //     setGroups(groups.filter((group) => group.id !== id));
-    // };
-
-    // const calculateGroupBalance = (groupId: string): number => {
-    //     let totalAmount = 0;
-    //     expenses.forEach((expense) => {
-    //         if (expense.groupId === groupId) {
-    //             totalAmount += expense.amount;
-    //         }
-    //     });
-    //     return totalAmount;
-    // };
     return (
         <div className='container center bg--white border-radius--xxl'>
             <div className='position--relative height--full'>
@@ -194,12 +129,12 @@ const Home: React.FC = () => {
                             <p className='font--bold font-size--22'>GroupList</p>
                             {allGroup.Groups.length > 0 && allGroup.Groups.map((user: Group) => {
                                 return (
-                                    <div className='list-item mb--5 flex' onClick={() => {
+                                    <div className='list-item mb--5 flex align-items--center justify-content--between' onClick={() => {
                                         setAction('expense')
                                         setId(user.id)
                                     }}>
                                         <p className='p--10'>{user.groupName}</p>
-                                        <p>{user.TotalBalance}</p>
+                                        <p>TotalBalance:{user.TotalBalance}</p>
                                     </div>
                                 );
                             })}
@@ -215,7 +150,7 @@ const Home: React.FC = () => {
                     <div className='cursor--pointer' onClick={() => setAction('groups')}>groups</div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
 
