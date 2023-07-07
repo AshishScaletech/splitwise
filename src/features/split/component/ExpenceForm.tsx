@@ -21,7 +21,10 @@ const ExpenceForm: React.FC<Iprops> = ({ options, id, handleSubmit }) => {
                 amount: 0,
                 id: id,
                 paidBy: '',
-
+                expence: {
+                    borrow: 0,
+                    lend: 0
+                }
             }}
             enableReinitialize
             onSubmit={handleSubmit}
@@ -36,7 +39,6 @@ const ExpenceForm: React.FC<Iprops> = ({ options, id, handleSubmit }) => {
                             className='width--full'
                             name='description'
                             placeholder="Description"
-                            // value={title}
                             onChange={(e) => setFieldValue('description', e.target.value)}
                         />
                     </div>
@@ -47,19 +49,9 @@ const ExpenceForm: React.FC<Iprops> = ({ options, id, handleSubmit }) => {
                             className='width--full'
                             name='amount'
                             placeholder="Amount"
-                            // value={title}
                             onChange={(e) => setFieldValue('amount', e.target.value)}
                         />
                     </div>
-                    {/* <div className='form-item mb--25 position--relative width--full'>
-                        <p>select Users:</p>
-                        <Select options={options} name='listId' components={animatedComponents}
-                            isMulti onChange={(selected) => {
-                                const UserId = selected.map((item: any) => item.id)
-
-                                setFieldValue('listId', UserId);
-                            }} />
-                    </div> */}
                     <div className='form-item mb--25 position--relative width--full'>
                         <p>Paid By:</p>
                         <Select options={options} name='paidBy' components={animatedComponents}

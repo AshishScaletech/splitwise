@@ -1,5 +1,5 @@
 
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { IUserList } from '../container/home';
 import Select, { ActionMeta, MultiValue } from 'react-select'
 import makeAnimated from 'react-select/animated';
@@ -39,7 +39,6 @@ const AddGroupForm: React.FC<Iprops> = ({ options, handleSubmit }) => {
                             className='width--full'
                             name='groupName'
                             placeholder="GroupName"
-                            // value={title}
                             onChange={(e) => setFieldValue('groupName', e.target.value)}
                         />
                     </div>
@@ -48,27 +47,15 @@ const AddGroupForm: React.FC<Iprops> = ({ options, handleSubmit }) => {
 
                         <Select options={options} name='users' components={animatedComponents}
                             isMulti onChange={(selected) => {
-                                // const UserId = selected.map((item: any) => item.id)
-
                                 setFieldValue('users', selected);
                             }} />
                     </div>
-                    <button type="submit" className='login-btn font-size--lg width--full text--uppercase text--white border-radius--default no--border bg--primary'>Add Expense</button>
+                    <button type="submit" className='login-btn font-size--lg width--full text--uppercase text--white border-radius--default no--border bg--primary'>Add Group</button>
                 </form>
             )}
         </Formik>
     );
 }
-
-
-
-
-const initialValues = {
-    groupName: '',
-    id: uuid(),
-    users: []
-}
-
 
 
 export default AddGroupForm;

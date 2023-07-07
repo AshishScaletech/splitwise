@@ -9,15 +9,16 @@ import { isEmpty } from 'lodash';
 
 
 interface Iprops {
-    options: IUserList[];
     allGroup: IAllGroup;
     id: string;
+    isAdd: boolean
+    setIsAdd: (isAdd: boolean) => void
     handleExpence: (values: FormikValues) => void;
 }
 
 
-const ExpenseList: React.FC<Iprops> = ({ handleExpence, allGroup, id }) => {
-    const [isAdd, setIsAdd] = useState(false);
+const ExpenseList: React.FC<Iprops> = ({ handleExpence, setIsAdd, isAdd, allGroup, id }) => {
+
     const selectedOptions = allGroup.Groups.filter((item: any) => item.id === id)
     const options = selectedOptions[0].users;
     const findIndex = allGroup.Groups.findIndex((group) => group.id === id);
@@ -28,7 +29,7 @@ const ExpenseList: React.FC<Iprops> = ({ handleExpence, allGroup, id }) => {
             <ul>
 
                 <button onClick={() => {
-                    setIsAdd(true)
+                    setIsAdd(true);
                 }}>addExpence</button>
 
                 <li>Person expens</li>
@@ -36,7 +37,9 @@ const ExpenseList: React.FC<Iprops> = ({ handleExpence, allGroup, id }) => {
                     return (
                         <li>
                             <p>{user.label}</p>
-                            <p>Expence:{user.expence}</p>
+                            {/* <p>{`${user.name} owed ${user.expence.lend}`}</p> */}
+                            <p>{user.expence.lend - user.expence.borrow}</p>
+                            {/* <p>To Borrowed:{user.expence.borrow}</p> */}
                         </li>
                     )
                 })}

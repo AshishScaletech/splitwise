@@ -1,9 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import ExpenseForm from '../component/addGroupForm';
+import React, { useCallback, useState } from 'react';
 import ExpenseList from '../component/expenceList';
-import { isEmpty, size } from 'lodash';
+import { isEmpty } from 'lodash';
 import CustomModal from 'shared/modal/modal';
-import { FormikValues } from 'formik';
 import { CloseIcon } from 'shared/components/icons/icons';
 import AddGroupForm from '../component/addGroupForm';
 
@@ -19,7 +17,10 @@ export interface IUserList {
     value: string;
     label: string;
     id: string;
-    expence?: number;
+    expence: {
+        borrow: number;
+        lend: number;
+    };
 }
 
 export interface Member {
@@ -32,136 +33,181 @@ export interface Group {
     groupName: string;
     TotalBalance: number;
     users: IUserList[];
-    expense: Expense[]
+    expense: Expense[];
 }
 
 export interface IAllGroup {
     Groups: Group[];
 }
 
-
-
 const Home: React.FC = () => {
     const groupData = JSON.parse(localStorage.getItem('groups') as string);
     const [allGroup, setAllGroups] = useState<IAllGroup>({
         Groups: groupData?.Groups || groupData || [],
-    })
-
-    const [action, setAction] = useState('groups')
+    });
+    const [isAdd, setIsAdd] = useState(false);
+    const [action, setAction] = useState('groups');
     const [id, setId] = useState('');
 
-    const handleSubmit = useCallback((values: any) => {
-        let tempObj = { ...allGroup }
-        const newArr = [...tempObj.Groups]
-        newArr.push({ ...values, expense: [] })
-        tempObj = { ...tempObj, Groups: newArr }
-        setAllGroups(tempObj)
-        localStorage.setItem('groups', JSON.stringify(tempObj))
-        setAction('groups');
-    }, [allGroup])
 
+    const handleSubmit = useCallback(
+        (values: any) => {
+            let tempObj = { ...allGroup };
 
-    const handleExpence = useCallback((values: any) => {
-        let tempObj = [...allGroup.Groups]
-        const index = tempObj.findIndex((data) => data.id === id);
-        const copyOfExpense = [...tempObj[index].expense];
-        copyOfExpense.push(values);
-        tempObj[index] = {
-            ...tempObj[index],
-            expense: copyOfExpense
-        };
+            const newArr = [...tempObj.Groups];
+            newArr.push({ ...values, expense: [] });
+            tempObj = { ...tempObj, Groups: newArr };
+            setAllGroups(tempObj);
+            localStorage.setItem('groups', JSON.stringify(tempObj));
+            setAction('groups');
+        },
+        [allGroup]
+    );
 
-        let tempArr = { ...tempObj[index] }
-        tempArr = { ...tempArr, TotalBalance: Number(tempArr.TotalBalance) + Number(values.amount) }
+    const handleExpence = useCallback(
+        (values: any) => {
+            let tempObj = [...allGroup.Groups];
+            const index = tempObj.findIndex((data) => data.id === id);
+            const copyOfExpense = [...tempObj[index].expense];
+            copyOfExpense.push({ ...values });
 
-        const copyUsers = [...tempArr.users]
-        const splitAmount = Number(values.amount) / copyUsers.length
-        const updatedUserExpense = copyUsers.map((item: IUserList) => {
+            tempObj[index].TotalBalance =
+                Number(tempObj[index].TotalBalance) + Number(values.amount);
 
-            return {
-                ...item, expence: Number(item.expence) + Number(splitAmount.toFixed(2))
-            }
-        })
-        tempArr = {
-            ...tempArr,
-            users: updatedUserExpense
-        }
-        tempObj.splice(index, 1, tempArr)
+            tempObj[index].users.map((user) => {
+                if (user.id === values.paidBy) {
+                    user.expence.lend =
+                        user.expence.lend +
+                        (values.amount / tempObj[index].users.length) *
+                        (tempObj[index].users.length - 1);
+                } else {
+                    user.expence.borrow =
+                        user.expence.borrow + values.amount / tempObj[index].users.length;
+                }
+            });
 
-
-        localStorage.setItem('groups', JSON.stringify(tempObj))
-        setAllGroups({ Groups: tempObj })
-    }, [allGroup, id,]);
-
+            tempObj[index] = {
+                ...tempObj[index],
+                expense: copyOfExpense,
+            };
+            localStorage.setItem('groups', JSON.stringify(tempObj));
+            setAllGroups({ Groups: tempObj });
+            setIsAdd(false);
+        },
+        [allGroup, id]
+    );
 
     return (
-        <div className='container center bg--white border-radius--xxl'>
-            <div className='position--relative height--full'>
-                <div className='header font-size--22 text--center flex align-items--center justify-content--center'>splitwise</div>
+        <div className="container center bg--white border-radius--xxl">
+            <div className="position--relative height--full">
+                <div className="header font-size--22 text--center flex align-items--center justify-content--center">
+                    splitWise
+                </div>
                 {action === 'add' && (
-
-                    <CustomModal show handleClose={() => setAction('users')} modalTitle={'Add Group'} className='position--relative'>
-                        <div className=''>
-                            <div className='close-btn flex align-items--center justify-content--center cursor--pointer' onClick={() => setAction('users')}>
+                    <CustomModal
+                        show
+                        handleClose={() => setAction('users')}
+                        modalTitle={'Add Group'}
+                        className="position--relative"
+                    >
+                        <div className="">
+                            <div
+                                className="close-btn flex align-items--center justify-content--center cursor--pointer"
+                                onClick={() => setAction('users')}
+                            >
                                 <CloseIcon className="stroke--white width--16px height--16px" />
                             </div>
                             <AddGroupForm options={options} handleSubmit={handleSubmit} />
                         </div>
                     </CustomModal>
                 )}
-                <div className='content'>
-
+                <div className="content">
                     {action === 'users' && (
                         <div>
-                            <p className='font--bold font-size--22'>FriendsList</p>
-                            {!isEmpty(options) && options.map((user) => {
-
-                                return (
-                                    <div className='list-item mb--5'>
-                                        <p className='p--10'>{user.label}</p>
-                                    </div>
-                                );
-                            })}
+                            <p className="font--bold font-size--22">FriendsList</p>
+                            {!isEmpty(options) &&
+                                options.map((user) => {
+                                    return (
+                                        <div className="list-item mb--5">
+                                            <p className="p--10">{user.label}</p>
+                                        </div>
+                                    );
+                                })}
                         </div>
                     )}
                     {action === 'groups' && (
                         <div>
-                            <p className='font--bold font-size--22'>GroupList</p>
-                            {allGroup.Groups.length > 0 && allGroup.Groups.map((user: Group) => {
-                                return (
-                                    <div className='list-item mb--5 flex align-items--center justify-content--between' onClick={() => {
-                                        setAction('expense')
-                                        setId(user.id)
-                                    }}>
-                                        <p className='p--10'>{user.groupName}</p>
-                                        <p>TotalBalance:{user.TotalBalance}</p>
-                                    </div>
-                                );
-                            })}
+                            <p className="font--bold font-size--22">GroupList</p>
+                            {allGroup.Groups.length > 0 &&
+                                allGroup.Groups.map((user: Group) => {
+                                    return (
+                                        <div
+                                            className="list-item mb--5 flex align-items--center justify-content--between"
+                                            onClick={() => {
+                                                setAction('expense');
+                                                setId(user.id);
+                                            }}
+                                        >
+                                            <p className="p--10">{user.groupName}</p>
+                                            <p>TotalBalance:{user.TotalBalance}</p>
+                                        </div>
+                                    );
+                                })}
                         </div>
                     )}
                     {action === 'expense' && (
-                        <ExpenseList options={options} allGroup={allGroup} handleExpence={handleExpence} id={id} />
+                        <ExpenseList
+                            allGroup={allGroup}
+                            setIsAdd={(isAdded: boolean) => setIsAdd(isAdded)}
+                            isAdd={isAdd}
+                            handleExpence={handleExpence}
+                            id={id}
+                        />
                     )}
                 </div>
-                <div className='position--absolute width--full flex justify-content--between align-items--center bottom-penal'>
-                    <div className='cursor--pointer' onClick={() => setAction('users')}>users</div>
-                    <div className='cursor--pointer' onClick={() => setAction('add')}>AddGroup</div>
-                    <div className='cursor--pointer' onClick={() => setAction('groups')}>groups</div>
+                <div className="position--absolute width--full flex justify-content--between align-items--center bottom-penal">
+                    <div className="cursor--pointer" onClick={() => setAction('users')}>
+                        users
+                    </div>
+                    <div className="cursor--pointer" onClick={() => setAction('add')}>
+                        AddGroup
+                    </div>
+                    <div className="cursor--pointer" onClick={() => setAction('groups')}>
+                        groups
+                    </div>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 const options: IUserList[] = [
-    { value: 'johan', label: 'Johan', id: 'johan', expence: 0 },
-    { value: 'ander', label: 'Ander', id: 'ander', expence: 0 },
-    { value: 'dooren', label: 'Dooren', id: 'dooren', expence: 0 },
-    { value: 'jems', label: 'Jems', id: 'jems', expence: 0 },
-    { value: 'tom', label: 'Tom', id: 'tom', expence: 0 },
-    { value: 'michal', label: 'Michal', id: 'michal', expence: 0 }
-]
+    {
+        value: 'johan',
+        label: 'Johan',
+        id: 'johan',
+        expence: { borrow: 0, lend: 0 },
+    },
+    {
+        value: 'ander',
+        label: 'Ander',
+        id: 'ander',
+        expence: { borrow: 0, lend: 0 },
+    },
+    {
+        value: 'dooren',
+        label: 'Dooren',
+        id: 'dooren',
+        expence: { borrow: 0, lend: 0 },
+    },
+    { value: 'jems', label: 'Jems', id: 'jems', expence: { borrow: 0, lend: 0 } },
+    { value: 'tom', label: 'Tom', id: 'tom', expence: { borrow: 0, lend: 0 } },
+    {
+        value: 'michal',
+        label: 'Michal',
+        id: 'michal',
+        expence: { borrow: 0, lend: 0 },
+    },
+];
 
-
-export default Home
+export default Home;
