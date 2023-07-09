@@ -29,9 +29,9 @@ const AddGroupForm: React.FC<Iprops> = ({ options, handleSubmit }) => {
             enableReinitialize
             onSubmit={handleSubmit}
         >
-            {({ values, setFieldValue, handleSubmit, resetForm }) => (
+            {({ values, setFieldValue, handleSubmit, resetForm, dirty }) => (
 
-                <form className='flex flex--column mt--15' onSubmit={handleSubmit}>
+                <form className='flex flex--column mt--15' aria-required onSubmit={handleSubmit}>
                     <div className='form-item mb--25 position--relative '>
 
                         <input

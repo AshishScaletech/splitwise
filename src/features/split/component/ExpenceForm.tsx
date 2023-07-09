@@ -59,7 +59,7 @@ const ExpenceForm: React.FC<Iprops> = ({ options, id, handleSubmit }) => {
                                 setFieldValue('paidBy', selected.id);
                             }} />
                     </div>
-                    <div className='flex'>
+                    {/* <div className='flex'>
 
                         <div className='flex form-item mb--25 position--relative width--20'>
                             Split:
@@ -76,7 +76,7 @@ const ExpenceForm: React.FC<Iprops> = ({ options, id, handleSubmit }) => {
                             </label>
 
                         </div>
-                    </div>
+                    </div> */}
                     <button type="submit" className='login-btn font-size--lg width--full text--uppercase text--white border-radius--default no--border bg--primary'>Add Expense</button>
                 </form>
             )}
